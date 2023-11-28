@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import admin.Employee;
 import middle.admin.EmployeeManager;
@@ -35,6 +37,22 @@ public class DBEmployeeManager implements EmployeeManager {
 		String name = result.getString("name");
 		String passCode = result.getString("passCode");
 		return new Employee(employeeId, name, passCode);
+	}
+	
+	@Override
+	public List<Employee> getAllEmployees() throws SQLException {
+		List<Employee> resultingList = new ArrayList<>();
+		PreparedStatement statement = getPreparedStatement(
+				"SELECT * FROM EmployeeTable"
+				);
+		ResultSet results = statement.executeQuery();
+		while(results.next()) {
+			long id = results.getLong("id");
+			String name = results.getString("name");
+			String passCode = results.getString("passCode");
+			resultingList.add(new Employee(id, name, passCode));
+		}
+		return resultingList;
 	}
 	
 	@Override

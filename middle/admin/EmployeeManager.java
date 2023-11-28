@@ -1,6 +1,7 @@
 package middle.admin;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import admin.Employee;
 
@@ -15,6 +16,13 @@ public interface EmployeeManager {
 	 * @throws  
 	 */
 	Employee getEmployee(long employeeId) throws Exception;
+	
+	/**
+	 * Gets all the employees
+	 * @return a list containing all of the employees
+	 * @throws SQLException
+	 */
+	List<Employee> getAllEmployees() throws SQLException;
 	
 	/**
 	 * Creates a new employee and inserts it into the database
