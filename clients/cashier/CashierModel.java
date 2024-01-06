@@ -3,9 +3,13 @@ package clients.cashier;
 import catalogue.Basket;
 import catalogue.Product;
 import debug.DEBUG;
+import events.BiListener;
 import middle.*;
+import middle.admin.EmployeeManager;
 
 import java.util.Observable;
+
+import admin.Employee;
 
 /**
  * Implements the Model of the cashier client
@@ -21,9 +25,15 @@ public class CashierModel extends Observable
   private Basket      theBasket  = null;            // Bought items
 
   private String      pn = "";                      // Product being processed
+  
+  private boolean loggedIn;
 
   private StockReadWriter theStock     = null;
   private OrderProcessing theOrder     = null;
+  private EmployeeManager employeeManager;
+  
+  // Listeners
+  private BiListener<Boolean, Employee> loginSuccessListener;
 
   /**
    * Construct the model of the Cashier
@@ -36,12 +46,17 @@ public class CashierModel extends Observable
     {      
       theStock = mf.makeStockReadWriter();        // Database access
       theOrder = mf.makeOrderProcessing();        // Process order
+      this.employeeManager = mf.makeEmployeeManager();
     } catch ( Exception e )
     {
       DEBUG.error("CashierModel.constructor\n%s", e.getMessage() );
     }
     theState   = State.process;                  // Current state
   }
+  
+  public void setLoginSuccessListener(BiListener<Boolean, Employee> loginSuccessListener) {
+	this.loginSuccessListener = loginSuccessListener;
+}
   
   /**
    * Get the Basket of products
@@ -50,6 +65,15 @@ public class CashierModel extends Observable
   public Basket getBasket()
   {
     return theBasket;
+  }
+  
+  public boolean isLoggedIn() {
+	return loggedIn;
+  }
+  
+  public void doLogin(Employee employee, String passCode) {
+	  this.loggedIn = employee.getPassCode().equals(passCode);
+	  loginSuccessListener.onChange(loggedIn, employee);
   }
 
   /**

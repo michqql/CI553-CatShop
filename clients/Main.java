@@ -1,4 +1,6 @@
 package clients;
+import clients.admin.AdminController;
+import clients.admin.AdminModel;
 import clients.admin.AdminView;
 import clients.backDoor.BackDoorController;
 import clients.backDoor.BackDoorModel;
@@ -68,7 +70,7 @@ class Main
     Dimension pos = PosOnScrn.getPos();
     
     CustomerModel model      = new CustomerModel(mlf);
-    CustomerView view        = new CustomerView(model, window, mlf, pos.width, pos.height);
+    CustomerView view        = new CustomerView(window, mlf, pos.width, pos.height);
     CustomerController cont  = new CustomerController( model, view );
     view.setController( cont );
 
@@ -113,13 +115,17 @@ class Main
     window.setVisible(true);         // Make window visible    
   }
   
-  public void startAdminGUI_MVC(MiddleFactory f) {
+  public void startAdminGUI_MVC(MiddleFactory mf) {
 	  JFrame window = new JFrame();
 	  window.setTitle("Admin Client MVC");
 	  window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	  Dimension pos = PosOnScrn.getPos();
 	  
-	  AdminView view = new AdminView(window, f, pos.width, pos.height);
+	  AdminModel model = new AdminModel(mf);
+	  AdminView view = new AdminView(window, mf, pos.width, pos.height);
+	  AdminController controller = new AdminController(model, view);
+	  
+	  view.setAdminController(controller);
   }
   
 

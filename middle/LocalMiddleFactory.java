@@ -24,7 +24,7 @@ public class LocalMiddleFactory implements MiddleFactory
   private static StockR  aStockR  = null;
   private static StockRW aStockRW = null;
   private static Order   aOrder   = null;
-  private EmployeeManager employeeManager = null;
+  private static EmployeeManager employeeManager = null;
   
   /**
    * Return an object to access the database for read only access.

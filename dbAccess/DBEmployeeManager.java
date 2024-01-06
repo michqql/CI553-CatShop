@@ -50,6 +50,7 @@ public class DBEmployeeManager implements EmployeeManager {
 			long id = results.getLong("id");
 			String name = results.getString("name");
 			String passCode = results.getString("passCode");
+			System.out.println("Loaded employee: " + id + ", " + name + ", " + passCode);
 			resultingList.add(new Employee(id, name, passCode));
 		}
 		return resultingList;
@@ -57,9 +58,8 @@ public class DBEmployeeManager implements EmployeeManager {
 	
 	@Override
 	public Employee createNewEmployee(String name, String passCode) throws SQLException {
-		PreparedStatement statement = getPreparedStatement(
-				"INSERT INTO EmployeeTable(name, passCode) VALUES(?, ?)"
-				);
+		String sql = "INSERT INTO EmployeeTable(name, passCode) VALUES(?, ?)";
+		PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		statement.setString(1, name);
 		statement.setString(2, passCode);
 		statement.execute();
@@ -81,7 +81,8 @@ public class DBEmployeeManager implements EmployeeManager {
 				"DELETE FROM EmployeeTable WHERE id=?"
 				);
 		statement.setLong(1, employeeId);
-		return statement.execute();
+		statement.execute();
+		return statement.getUpdateCount() > 0;
 	}
 	
 	protected final PreparedStatement getPreparedStatement(String sql) throws SQLException {

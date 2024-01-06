@@ -1,26 +1,31 @@
 package clients.customer;
 
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.RootPaneContainer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+
 import catalogue.Basket;
-import catalogue.BetterBasket;
 import clients.Picture;
-import debug.DEBUG;
 import events.ArrowKeyListener;
 import events.SimpleDocumentListener;
 import middle.MiddleFactory;
 import middle.StockReader;
 import util.Pair;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Implements the Customer view.
@@ -79,7 +84,7 @@ public class CustomerView implements Observer
    * @param y     y-cordinate of position of window on screen  
    */
   
-  public CustomerView(CustomerModel model, RootPaneContainer rpc, MiddleFactory mf, int x, int y )
+  public CustomerView(RootPaneContainer rpc, MiddleFactory mf, int x, int y )
   {
     try                                             // 
     {      
@@ -184,12 +189,6 @@ public class CustomerView implements Observer
     
     rootWindow.setVisible( true );                  // Make visible);
     theInput.requestFocus();                        // Focus is here
-    
-    // Setup listeners
-    model.setBasketChangeListener(pair -> updateBasket(pair.getKey(), pair.getValue()));
-    model.setValidProductCodeListener(b -> {
-    	theInput.setForeground(b ? VALID_COLOUR : INVALID_COLOUR);
-    });
   }
 
    /**
@@ -200,7 +199,20 @@ public class CustomerView implements Observer
   public void setController( CustomerController c )
   {
     cont = c;
+    setupListeners();
   }
+  
+	  /**
+	   * Should only be called after setController is called
+	   */
+	private void setupListeners() {
+		if(cont != null) {
+			cont.setBasketChangeListener(this::updateBasket);
+			cont.setValidProductCodeListener(b -> {
+				theInput.setForeground(b ? VALID_COLOUR : INVALID_COLOUR);
+			});
+		}
+	}
 
   /**
    * Update the view

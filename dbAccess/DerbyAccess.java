@@ -19,6 +19,8 @@ class DerbyAccess extends DBAccess
   public void loadDriver() throws Exception
   {
     Class.forName(DRIVER).newInstance();
+    // Stop derby from pre-allocating auto-incrementing columns
+    System.setProperty("derby.language.sequence.preallocator", "1");
   }
 
   /**

@@ -1,5 +1,9 @@
 package clients.customer;
 
+import catalogue.Basket;
+import events.BiListener;
+import events.Listener;
+
 /**
  * The Customer Controller
  * @author M A Smith (c) June 2014
@@ -19,6 +23,14 @@ public class CustomerController
   {
     this.view  = view;
     this.model = model;
+  }
+  
+  public void setBasketChangeListener(BiListener<Basket, Integer> listener) {
+	  this.model.setBasketChangeListener(listener);
+  }
+  
+  public void setValidProductCodeListener(Listener<Boolean> listener) {
+	  this.model.setValidProductCodeListener(listener);
   }
   
   public void processCheck(String productNumber) {

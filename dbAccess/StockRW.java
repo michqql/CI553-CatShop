@@ -64,10 +64,16 @@ public class StockRW extends StockR implements StockReadWriter
     return updates > 0;   // sucess ?
   }
   
+	/**
+	 * Tries to buy all of the stock in the list. Will buy as many products as possible and ignore
+	 * products that are out of stock. 
+	 * @param list The list of products to buy
+	 * @return A list containing all the products that could not be bought.
+	 * 	 	 If the list is empty, all products have been bought
+	 * @throws StockException If an error occurred while buying stock
+	 */
   	@Override
 	public List<Product> buyAllStock(List<Product> list) throws StockException {
-  		DEBUG.trace("Database StockRW: buyAllStock(%s)", list);
-  		
   		List<Product> resultingList = new ArrayList<>();
 		try {
 			PreparedStatement statement = getPreparedStatement(

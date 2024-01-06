@@ -71,19 +71,22 @@ public class Basket extends ArrayList<Product> implements Serializable
   @Override
   public boolean add(Product pr) {
 	  // Check if product is already in the list
-	  Optional<Product> optional = stream()
-			  .filter(productInList -> pr.isSameItem(productInList))
-			  .findFirst();
-	  
-	  // If the product is already in the basket, increase the quantity of the product
-	  // instead of adding it to the list again
-	  if(optional.isPresent()) {
-		  Product inList = optional.get();
-		  inList.setQuantity(inList.getQuantity() + pr.getQuantity());
-		  return true;
-	  } else {
-		  return super.add(pr.copy());     // Call add in ArrayList
+	  Product found = null;
+	  for(Product inList : this) { // can use this keyword as this class extends ArrayList
+		  if(inList.isSameItem(pr)) {
+			  found = inList;
+			  break;
+		  }
 	  }
+	  
+	  // If found is null, product was not in the list, so add it
+	  if(found == null) {
+		  return super.add(pr.copy()); // Need to take a copy as quantity may get modified later
+	  } else {
+		  // found is non-null and in the list, increase quantity
+		  found.setQuantity(found.getQuantity() + pr.getQuantity());
+		  return true;
+	  } 
   }
   
   @Override
@@ -97,45 +100,61 @@ public class Basket extends ArrayList<Product> implements Serializable
   
   @Override
 	public boolean remove(Object o) {
-	  if(!(o instanceof Product)) return false;
+	  // Check if objects are same type, if not can early return
+	  if(!(o instanceof Product)) 
+		  return false;
 	  
 	  // The object passed will not be the same as the one stored in list,
 	  // as a copy is made before adding the product to the list,
 	  // therefore we need to check by item type
-	  Optional<Product> optional = stream()
-			  .filter(productInList -> productInList.isSameItem((Product) o))
-			  .findFirst();
+	  Product found = null;
+	  for(Product inList : this) {
+		  if(inList.isSameItem((Product) o)) {
+			  found = inList;
+			  break;
+		  }
+	  }
 	  
-	  // Product was not found in the list
-	  if(optional.isEmpty()) return false;
+	  // Found a matching product in the list, remove the object from the list
+	  if(found != null)
+		  return super.remove(found);
 	  
-	  // Removes the item
-	  return super.remove(optional.get());
+	  return false;
 	}
   
   /**
    * Will decrease the quantity of the product in the list by one
    * If the quantity of the product becomes zero, the product will be removed from the list
    * @param pr - the product to decrease
+   * @param amount - the amount to decrease by (should keep as positive)
    * @return true if the product was removed or the quantity decreased
    */
-  public boolean decreaseProductQuantity(Product pr) {
+  public boolean decreaseProductQuantity(Product pr, int amount) {
 	  // Find the product in the list that matches this product
-	  Optional<Product> optional = stream()
-			  .filter(productInList -> pr.isSameItem(productInList))
-			  .findFirst();
-	  
-	  // Product is not in the list, so could not be decreased
-	  if(optional.isEmpty()) return false;
-	  
-	  Product productInList = optional.get();
-	  // Check if quantity is already one (if so, remove)
-	  if(productInList.getQuantity() <= 1) {
-		  return remove(productInList);
+	  Product found = null;
+	  for(Product inList : this) {
+		  if(inList.isSameItem(pr)) {
+			  found = inList;
+			  break;
+		  }
 	  }
 	  
-	  // Decrease count and return true
-	  productInList.setQuantity(productInList.getQuantity() - 1);
+	  if(found == null) {
+		  // Product is not in list, so cannot be decreased
+		  return false;
+	  }
+	  
+	  // In case the user supplied a negative amount, take the absolute value
+	  found.setQuantity(found.getQuantity() - Math.abs(amount));
+	  
+	  // Remove the product is the quantity has reached zero,
+	  // as you cannot have a product with zero quantity
+	  if(found.getQuantity() <= 0) {
+		  // We know that the found object is in the list,
+		  // so can call super.remove to directly remove this object
+		  return super.remove(found);
+	  }
+	  
 	  return true;
   }
 

@@ -14,6 +14,7 @@ public class Employee {
 	
 	public Employee(long id, String name, String passCode) {
 		this.id = id;
+		this.name = name;
 		this.passCode = passCode;
 	}
 	
@@ -31,6 +32,10 @@ public class Employee {
 	
 	public String getPassCode() {
 		return passCode;
+	}
+	
+	public boolean isPassCodeSet() {
+		return passCode != null && EmployeeManager.isPassCodeValid(passCode);
 	}
 	
 	/**

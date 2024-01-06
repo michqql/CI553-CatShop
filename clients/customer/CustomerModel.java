@@ -3,6 +3,7 @@ package clients.customer;
 import catalogue.Basket;
 import catalogue.Product;
 import debug.DEBUG;
+import events.BiListener;
 import events.Listener;
 import middle.MiddleFactory;
 import middle.OrderException;
@@ -15,8 +16,10 @@ import util.Pair;
 import javax.swing.*;
 
 import java.beans.PropertyChangeSupport;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 
 /**
  * Implements the Model of the customer client
@@ -28,7 +31,8 @@ public class CustomerModel extends Observable
   private Product     product = null;          // Current product
   private Basket      basket  = null;          // Bought items
   private int selectedBasketIndex = 0; // The index of the item currently selected in the basket
-  private Listener<Pair<Basket, Integer>> basketChangeListener;
+  // The basket and the selected index
+  private BiListener<Basket, Integer> basketChangeListener;
 
   private String      pn = "";                    // Product being processed
   private Listener<Boolean> validProductCodeListener;
@@ -36,6 +40,8 @@ public class CustomerModel extends Observable
   private final StockReadWriter stockReadWriter;
   private final OrderProcessing orderProcessing;
   private ImageIcon       thePic       = null;
+  
+  private final Set<String> queryCache = new HashSet<>();
 
   /*
    * Construct the model of the Customer
@@ -68,7 +74,7 @@ public class CustomerModel extends Observable
 	return product;
 }
   
-  public void setBasketChangeListener(Listener<Pair<Basket, Integer>> basketChangeListener) {
+  public void setBasketChangeListener(BiListener<Basket, Integer> basketChangeListener) {
 	  this.basketChangeListener = basketChangeListener;
   }
   
@@ -76,13 +82,26 @@ public class CustomerModel extends Observable
 	this.validProductCodeListener = validProductCode;
 }
   
+  /**
+   * Processes the users entered text to see if it is a valid product
+   * @param productNumber
+   */
   public void processCheck(String productNumber) {
+	  // Check if contained in cache
+	  if(queryCache.contains(productNumber)) {
+		  // If so, avoid checking database for product
+		  doCheck(productNumber);
+		  return;
+	  }
+	  
 	  try {
 		  if(!stockReadWriter.exists(productNumber)) {
 			  validProductCodeListener.onChange(false);
 			  return;
 		  }
-		  
+		  // The product exists in the database, so cache this product number
+		  queryCache.add(productNumber);
+		 
 		  doCheck(productNumber);
 	  } catch(StockException e) {
 		  DEBUG.error("CustomerClient.processCheck()\n%s", e.getMessage());
@@ -145,6 +164,9 @@ public class CustomerModel extends Observable
     notifyObservers(theAction);
   }
   
+  /**
+   * Adds the product from the query to the basket.
+   */
   public void addToBasket() {
 	  String action;
 	  if(product == null) {
@@ -159,7 +181,7 @@ public class CustomerModel extends Observable
 		  }
 	  }
 	  
-	  basketChangeListener.onChange(new Pair<>(basket, selectedBasketIndex));
+	  basketChangeListener.onChange(basket, selectedBasketIndex);
 	  
 	  setChanged();
 	  notifyObservers(action);
@@ -181,20 +203,20 @@ public class CustomerModel extends Observable
 		  return;
 	  }
 	  
-	  basket.decreaseProductQuantity(basket.get(selectedBasketIndex));
+	  basket.decreaseProductQuantity(basket.get(selectedBasketIndex), 1);
 	  // Bound the index to the size of the basket
 	  if(selectedBasketIndex >= basket.size()) 
 		  selectedBasketIndex = basket.size();
 	  
-	  basketChangeListener.onChange(new Pair<>(basket, selectedBasketIndex));
+	  basketChangeListener.onChange(basket, selectedBasketIndex);
+	  
   }
   
   /**
-   * The customer client can buy the contents of their basket,
-   * bypassing the cashier and going straight to picking.
+   * This method allows the customer to buy their basket.
    */
   public void buyOnline() {
-	  String result;
+	  String result = "";
 	  if(basket.isEmpty()) {
 		  result = "Basket is empty";
 		  setChanged();
@@ -207,11 +229,14 @@ public class CustomerModel extends Observable
 		  List<Product> unbought = stockReadWriter.buyAllStock(basket);
 		  basket.removeAll(unbought); // Remove the items that could not be bought from the basket
 		  
-		  int orderNumber = orderProcessing.uniqueNumber();
-		  basket.setOrderNum(orderNumber);
-		  DEBUG.trace("Basket: " + basket.getDetails());
-		  orderProcessing.newOrder(basket);
-		  result = "Order purchased, order no: #" + orderNumber;
+		  // Create the order with the remaining items in the basket
+		  // (the ones that were bought, if any)
+		  if(!basket.isEmpty()) {
+			  int orderNumber = orderProcessing.uniqueNumber();
+			  basket.setOrderNum(orderNumber);
+			  orderProcessing.newOrder(basket);
+			  result = "Order purchased, order no: #" + orderNumber;
+		  }
 		  
 		  // Must make a new basket here as some code may rely on this basket object.
 		  basket = makeBasket();
@@ -222,7 +247,8 @@ public class CustomerModel extends Observable
 			  // Add these unbought items back to the basket
 			  basket.addAll(unbought);
 		  }
-		  basketChangeListener.onChange(new Pair<>(basket, (selectedBasketIndex = -1)));
+		  selectedBasketIndex = -1;
+		  basketChangeListener.onChange(basket, selectedBasketIndex);
 		  setChanged();
 		  notifyObservers(result);
 	  } catch(OrderException | StockException e) {

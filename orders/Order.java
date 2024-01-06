@@ -94,10 +94,6 @@ public class Order implements OrderProcessing
   {
     DEBUG.trace( "DEBUG: New order: " + bought.getDetails());
     folders.add( new Folder( bought ) );
-    for ( Folder bws : folders )
-    {
-       DEBUG.trace( "Order: " + asString( bws.getBasket() ) );
-    }
   }
 
   /**
@@ -114,7 +110,6 @@ public class Order implements OrderProcessing
       if ( bws.getState() == State.Waiting )
       {
         foundWaiting = bws.getBasket();
-        DEBUG.trace("Found waiting: (" + bws.getBasket().getOrderNum() + ") " + bws.getBasket().getDetails());
         bws.newState( State.BeingPicked );
         break;
       }
