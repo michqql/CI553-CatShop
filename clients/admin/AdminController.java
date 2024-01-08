@@ -29,5 +29,9 @@ public class AdminController {
 	public void removeEmployee(Employee employee) {
 		model.removeEmployee(employee);
 	}
+	
+	public void passcodeChanged(Employee employee) {
+		model.passcodeChanged(employee);
+	}
 
 }

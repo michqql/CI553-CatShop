@@ -70,4 +70,13 @@ public class AdminModel {
 		}
 	}
 	
+	public void passcodeChanged(Employee employee) {
+		try {
+			employeeManager.saveEmployee(employee);
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 }

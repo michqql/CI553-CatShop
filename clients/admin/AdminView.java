@@ -78,6 +78,7 @@ public class AdminView {
 	
 	public void setAdminController(AdminController controller) {
 		this.controller = controller;
+		this.employeeList.setController(controller);
 		setupListeners();
 	}
 	

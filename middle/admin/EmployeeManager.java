@@ -34,6 +34,13 @@ public interface EmployeeManager {
 	Employee createNewEmployee(String name, String passCode) throws SQLException;
 	
 	/**
+	 * Save and update the already existing employee
+	 * @param employee - the employee to save
+	 * @return {@code true} if the employee was saved
+	 */
+	boolean saveEmployee(Employee employee) throws SQLException;
+	
+	/**
 	 * Deletes the employee
 	 * @param employeeId The id to delete
 	 * @return {@code true} if the employee was deleted

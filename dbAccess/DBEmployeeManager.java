@@ -75,6 +75,18 @@ public class DBEmployeeManager implements EmployeeManager {
 	}
 	
 	@Override
+	public boolean saveEmployee(Employee employee) throws SQLException {
+		String sql = "UPDATE EmployeeTable SET name=?, passCode=? WHERE id=?";
+		PreparedStatement statement = conn.prepareStatement(sql);
+		statement.setString(1, employee.getName());
+		statement.setString(2, employee.getPassCode());
+		statement.setLong(3, employee.getId());
+		
+		statement.execute();
+		return statement.getUpdateCount() > 0;
+	}
+	
+	@Override
 	public boolean deleteEmployee(long employeeId) throws SQLException {
 		PreparedStatement statement = getPreparedStatement(
 				"DELETE FROM EmployeeTable WHERE id=?"

@@ -37,12 +37,19 @@ public class EmployeeListPane extends JPanel {
 	
 	private final EmployeeManager manager;
 	private final List<Employee> employeeCache = new ArrayList<>();
+	
 	private JList<ListEntry> list;
 	private JScrollBar scrollBar;
+	
+	private AdminController controller;
 	
 	public EmployeeListPane(EmployeeManager manager) {
 		super(new BorderLayout());
 		this.manager = manager;
+	}
+	
+	public void setController(AdminController controller) {
+		this.controller = controller;
 	}
 	
 	@Override
@@ -314,7 +321,9 @@ public class EmployeeListPane extends JPanel {
 			
 			boolean success = employee.setPassCode(result);
 			if(success) {
+				controller.passcodeChanged(employee);
 				JOptionPane.showMessageDialog(EmployeeListPane.this, type + " PassCode successful");
+				reloadEmployees(employeeCache);
 			} else {
 				// The pass code was not valid, ask the user if they would like to try again
 				int yesNoResult = JOptionPane.showConfirmDialog(
