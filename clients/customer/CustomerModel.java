@@ -96,6 +96,8 @@ public class CustomerModel extends Observable
 	  
 	  try {
 		  if(!stockReadWriter.exists(productNumber)) {
+			  // Product doesn't exist, set the object to null
+			  resetProduct();
 			  validProductCodeListener.onChange(false);
 			  return;
 		  }
@@ -261,10 +263,12 @@ public class CustomerModel extends Observable
   
   public void decreaseSelectedBasketIndex() {
 	  this.selectedBasketIndex = Math.max(0, --selectedBasketIndex);
+	  basketChangeListener.onChange(basket, selectedBasketIndex);
   }
   
   public void increaseSelectedBasketIndex() {
 	  this.selectedBasketIndex = Math.min(basket.size() - 1, ++selectedBasketIndex);
+	  basketChangeListener.onChange(basket, selectedBasketIndex);
   }
   
   /**
@@ -291,6 +295,14 @@ public class CustomerModel extends Observable
   protected Basket makeBasket()
   {
     return new Basket();
+  }
+  
+  private void resetProduct() {
+	  this.product = null;
+	  this.thePic = null;
+	  
+	  setChanged();
+	  notifyObservers();
   }
 }
 

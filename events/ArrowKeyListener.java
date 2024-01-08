@@ -10,7 +10,6 @@ public abstract class ArrowKeyListener implements KeyListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("Event");
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_KP_UP:
@@ -25,12 +24,8 @@ public abstract class ArrowKeyListener implements KeyListener {
 	}
 	
 	@Override
-	public void keyReleased(KeyEvent e) {
-		System.out.println("Event released");
-	}
+	public void keyReleased(KeyEvent e) {}
 	
 	@Override
-	public void keyTyped(KeyEvent e) {
-		System.out.println("Event typed");
-	}
+	public void keyTyped(KeyEvent e) {}
 }

@@ -4,7 +4,7 @@ import java.awt.GridLayout;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -14,7 +14,7 @@ import middle.admin.EmployeeManager;
 public class EmployeeGridPanel extends JPanel {
 	
 	public EmployeeGridPanel(EmployeeManager manager) {
-		JPanel grid = new JPanel(new GridLayout(0, 3));
+		JPanel grid = new JPanel(new GridLayout(0, 1));
 		
 		try {
 			List<Employee> employees = manager.getAllEmployees();
@@ -34,12 +34,9 @@ public class EmployeeGridPanel extends JPanel {
 		add(scrollPane);
 	}
 	
-	private static class GridCell extends JPanel {
+	private static class GridCell extends JButton {
 		public GridCell(Employee em) {
-			super(new GridLayout(1, 1));
-			
-			JLabel label = new JLabel(em.getName());
-			add(label);
+			super(em.getName());
 		}
 	}
 

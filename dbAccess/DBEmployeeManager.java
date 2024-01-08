@@ -50,7 +50,6 @@ public class DBEmployeeManager implements EmployeeManager {
 			long id = results.getLong("id");
 			String name = results.getString("name");
 			String passCode = results.getString("passCode");
-			System.out.println("Loaded employee: " + id + ", " + name + ", " + passCode);
 			resultingList.add(new Employee(id, name, passCode));
 		}
 		return resultingList;

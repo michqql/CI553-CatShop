@@ -98,18 +98,6 @@ public class CustomerView implements Observer
     cp.setLayout(null);                             // No layout manager
     rootWindow.setSize( W, H );                     // Size of Window
     rootWindow.setLocation( x, y );
-    rootWindow.addKeyListener(new ArrowKeyListener() {
-		@Override
-		public void arrowUp() {
-			System.out.println("Arrow uo");
-			cont.decreaseSelectedIndex();
-			
-		}
-		@Override
-		public void arrowDown() {
-			cont.increaseSelectedIndex();
-		}
-	});
 
     Font f = new Font("Monospaced",Font.PLAIN,12);  // Font f is
 
@@ -133,11 +121,7 @@ public class CustomerView implements Observer
 		@Override
 		public void onChange() {
 			String text = theInput.getText();
-			if(text.isEmpty()) {
-				cont.doClear();
-			} else {
-				cont.processCheck(text);
-			}
+			cont.processCheck(text);
 		}
 	});
     cp.add( theInput );                             //  Add to canvas
@@ -186,9 +170,20 @@ public class CustomerView implements Observer
     basketDisplay.setEditable(false);
     cp.add(basketScrollPane);
     basketScrollPane.getViewport().add(basketDisplay);
+    basketDisplay.addKeyListener(new ArrowKeyListener() {
+		@Override
+		public void arrowUp() {
+			cont.decreaseSelectedIndex();
+			
+		}
+		@Override
+		public void arrowDown() {
+			cont.increaseSelectedIndex();
+		}
+	});
     
     rootWindow.setVisible( true );                  // Make visible);
-    theInput.requestFocus();                        // Focus is here
+    basketDisplay.requestFocusInWindow();
   }
 
    /**

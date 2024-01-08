@@ -1,5 +1,7 @@
 package clients.cashier;
 
+import admin.Employee;
+import events.BiListener;
 
 /**
  * The Cashier Controller
@@ -20,6 +22,18 @@ public class CashierController
   {
     this.view  = view;
     this.model = model;
+  }
+  
+  public void setLoginSuccessListener(BiListener<Boolean, Employee> loginSuccessListener) {
+		model.setLoginSuccessListener(loginSuccessListener);
+	}
+  
+  public boolean isLoggedIn() {
+	  return model.isLoggedIn();
+  }
+  
+  public void doLogin(Employee employee, String passCode) {
+	  model.doLogin(employee, passCode);
   }
 
   /**

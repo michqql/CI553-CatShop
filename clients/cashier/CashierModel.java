@@ -27,6 +27,7 @@ public class CashierModel extends Observable
   private String      pn = "";                      // Product being processed
   
   private boolean loggedIn;
+  private Employee currentLogin;
 
   private StockReadWriter theStock     = null;
   private OrderProcessing theOrder     = null;
@@ -73,7 +74,12 @@ public class CashierModel extends Observable
   
   public void doLogin(Employee employee, String passCode) {
 	  this.loggedIn = employee.getPassCode().equals(passCode);
+	  if(loggedIn) 
+		  currentLogin = employee;
 	  loginSuccessListener.onChange(loggedIn, employee);
+	  
+	  setChanged();
+	  notifyObservers("Welcome " + employee.getName());
   }
 
   /**
@@ -189,7 +195,11 @@ public class CashierModel extends Observable
    */
   public void askForUpdate()
   {
-    setChanged(); notifyObservers("Welcome");
+	  if(currentLogin != null) {
+		  setChanged(); notifyObservers("Welcome " + currentLogin.getName());
+	  } else {
+		  setChanged(); notifyObservers("Welcome");
+	  }
   }
   
   /**
