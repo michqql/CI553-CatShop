@@ -36,9 +36,16 @@ public class AdminModel {
 	}
 	
 	public void createNewEmployee(String name, String passCode) {
-		if(!EmployeeManager.isPassCodeValid(passCode)) {
-			employeeCreationListener.onChange(null, "PassCode is invalid: " + passCode);
+		if(name == null || name.isEmpty()) {
+			employeeCreationListener.onChange(null, "Missing employee name");
 			return;
+		}
+		
+		if(passCode != null && !passCode.isEmpty()) {
+			if(!EmployeeManager.isPassCodeValid(passCode)) {
+				employeeCreationListener.onChange(null, "PassCode is invalid: " + passCode);
+				return;
+			}
 		}
 		
 		try {

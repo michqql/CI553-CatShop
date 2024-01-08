@@ -83,8 +83,11 @@ public class AdminView {
 	
 	private void setupListeners() {
 		controller.setEmployeeCreationListener((employee, resultStr) -> {
-			if(employee != null)
+			if(employee != null) {
 				employeeList.informEmployeeCreated(employee);
+			} else {
+				alert(resultStr);
+			}
 		});
 		
 		controller.setEmployeeRemovedListener((employee, success) -> {
@@ -97,7 +100,12 @@ public class AdminView {
 	private void createEmployee() {
 		// Display pop up window to ask for employee details
 		String name = JOptionPane.showInputDialog(rootWindow, "Enter employee name");
+		if(name == null) // cancel creation if CANCEL button pressed (string will be null)
+			return;
+		
 		String passCode = JOptionPane.showInputDialog(rootWindow, "Set employee PassCode");
+		if(passCode == null) // cancel creation if CANCEL button pressed (string will be null)
+			return;
 		
 		controller.createNewEmployee(name, passCode);
 	}
@@ -111,6 +119,10 @@ public class AdminView {
 		if(!query.isEmpty()) {
 			searchField.setForeground(results ? VALID_COLOUR : INVALID_COLOUR);
 		}
+	}
+	
+	private void alert(String message) {
+		JOptionPane.showMessageDialog(employeeList, message);
 	}
 
 }
