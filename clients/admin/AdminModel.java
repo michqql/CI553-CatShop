@@ -58,6 +58,9 @@ public class AdminModel {
 	}
 	
 	public void removeEmployee(Employee employee) {
+		if(employee == null) // Avoid NPE
+			return;
+		
 		try {
 			boolean deleted = employeeManager.deleteEmployee(employee.getId());
 			employeeRemovedListener.onChange(employee, deleted);
