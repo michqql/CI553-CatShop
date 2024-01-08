@@ -175,7 +175,8 @@ public class CustomerModel extends Observable
 		  // Product must not be null, inform the user they have not queried an item
 		  action = "Nothing to add to basket!";
 	  } else {
-		  if(stockReadWriter.getProductStockLevel(product.getProductNum()) > 0) {
+		  int stock = stockReadWriter.getProductStockLevel(product.getProductNum()) - basket.getProductQuantity(product);
+		  if(stock > 0) {
 			  basket.add(product);
 			  action = product.getDescription() + " added to basket!";
 		  } else {

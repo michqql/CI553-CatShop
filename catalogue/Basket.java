@@ -157,6 +157,20 @@ public class Basket extends ArrayList<Product> implements Serializable
 	  
 	  return true;
   }
+  
+  /**
+   * Returns the quantity of the product in this basket
+   * @param product - the product to get the quantity of
+   * @return the quantity
+   */
+  public int getProductQuantity(Product product) {
+	  for(Product inList : this) {
+		  if(inList.isSameItem(product)) {
+			  return inList.getQuantity();
+		  }
+	  }
+	  return 0;
+  }
 
   /**
    * Returns a description of the products in the basket suitable for printing.
